@@ -1,4 +1,120 @@
 'use strict';
+const buttonsParent = document.getElementById("buttons_parent")
+let leftButtonTexts = ['КОНСАЛТИНГ', 'Медицина']
+let centerButtonTexts = ['ВАЛИДАЦИЯ', 'фармацевтика']
+let rightButtonTexts = ['AQ-SHARING', 'косметология']
+const buttons = [
+  document.getElementById("button_1"),
+  document.getElementById("button_2"),
+  document.getElementById("button_3")
+]
+const contactForm = document.getElementById("contact_form")
+const resultHeader = document.getElementById("result")
+const buttonTexts = [leftButtonTexts, centerButtonTexts, rightButtonTexts]
+let choices = []
+let steps = 0
+let variations = 0
+
+buttonsParent.addEventListener('click', event => {
+  choices.push(event.target.innerText.toUpperCase()); ++steps
+  if (steps === 1) {
+    $('.header_inner_text').text('Выберете Ваше направление');
+  }
+  if (steps === 2){
+    if(variations === 1) {
+      $('.header_inner_text').text('Выберете подходящий вариант направления сертификации');
+    }
+    else if (variations === 2) {
+      $('.header_inner_text').text('Выберете подходящий вариант направления валидации');
+    }
+    else if (variations === 3) {
+      $('.header_inner_text').text('Выберете подходящий для Вас вариант сотрудничества');
+    }
+  }
+  if (steps === 3) {
+    $('.header_inner_text').text('Оставьте ваши контактные данные и мы свяжемся с вами для уточнения деталей.');
+  }
+  if (steps < 3) {
+    buttons.forEach((button,index) => {
+      if (steps === 1 && choices == "КОНСАЛТИНГ") {
+        variations = 1
+        leftButtonTexts.push("ПРОИЗВОДСТВО");
+        centerButtonTexts.push("ПРОДУКТ");
+        rightButtonTexts.push("ПРОЦЕСС");
+        button.innerText = buttonTexts[index][steps]
+      }
+      else if (steps === 1 && choices == "ВАЛИДАЦИЯ"){
+        variations = 2
+        leftButtonTexts.push("ОБОРУДОВАНИЕ");
+        centerButtonTexts.push("ПОМЕЩЕНИЕ ");
+        rightButtonTexts.push("ПРОЦЕСС");
+        button.innerText = buttonTexts[index][steps]
+    } else if (steps === 1 && choices == "AQ-SHARING"){
+        variations = 3
+        leftButtonTexts.push("ЛАЙТ");
+        centerButtonTexts.push("СТАНДАРТ");
+        rightButtonTexts.push("VIP");
+        button.innerText = buttonTexts[index][steps]
+    } else {
+      button.innerText = buttonTexts[index][steps]
+    }
+    })
+  } else {
+    resultHeader.innerHTML = calculatePrice(choices)
+    resultHeader.style.display = 'block'
+    contactForm.style.setProperty("display", "flex")
+    steps = 0
+    choices = []
+    buttons.forEach((button,index) => button.style.setProperty("display", "none"))
+    $('.header_hide_last-stage').hide();
+    $('.header_inner_text').attr('style','margin-top:-50px!important');
+    $('#buttons_parent').hide();
+  }
+  // console.log(choices)
+});
+
+const calculatePrice = (choices) => {
+  const lbt = leftButtonTexts.map(text => text.toUpperCase())
+  const cbt = centerButtonTexts.map(text => text.toUpperCase())
+  const rbt = rightButtonTexts.map(text => text.toUpperCase())
+  let result = ''
+  switch (choices[0]) {
+    case lbt[0]:
+      result = "Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи."; break
+    case cbt[0]:
+      result = "Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи."; break
+    case rbt[0]:
+      if (choices[1] === lbt[1]) {
+        if (choices[2] === lbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        } else if (choices[2] === cbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        } else if (choices[2] === rbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        }
+      } else if (choices[1] === cbt[1]) {
+        if (choices[2] === lbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        } else if (choices[2] === cbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        } else if (choices[2] === rbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        }
+      } else if (choices[1] === rbt[1]) {
+        if (choices[2] === lbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        } else if (choices[2] === cbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        } else if (choices[2] === rbt[2]) {
+          result = 'Мы уже приступили к расчету стоимости <br>и сроков решения вашей задачи.'
+        }
+      }
+  }
+  return result
+}
+
+
+
 
 $(document).ready(function () {
   ScrollReveal({
@@ -112,7 +228,10 @@ $(document).ready(function () {
           processData: false,
           contentType: false
         }).done(function() {
+
           ym(64736089,'reachGoal', ymFormId);
+		  gtag('event', 'Форма '+ymFormId, {'event_category': 'click', 'event_action': ymFormId});
+		  
           $('.pop-up').removeClass('active');
           $('.thanks-popup').addClass('active');
         }).fail(function() {
@@ -351,175 +470,196 @@ function initPopupReveal() {
   initRevealFadeRight(4, '.pop-up-3 .wrapper', 400);
 }
 
-(() => {
-  const $$ = (e) => {
-    return document.querySelectorAll(e)
-  }, $ = (e) => {return document.querySelector(e)}
-  const img = $$('.sec-6-logo'),
-    text = $$('.sec-6-text'),
-    sec2 = $$('.sec-2-block'),
-    btn = $$('.pop-up-sec-5-button'),
-    uls = $$('.pop-up-sec-5-format'),
-    sec2blocks = $$('.sec-2-blocks'),
-    sec2blocksMain = $('#sec-2-blocks-main')
+// (() => {
+//   const $$ = (e) => {
+//     return document.querySelectorAll(e)
+//   }, $ = (e) => {return document.querySelector(e)}
+//   const img = $$('.sec-6-logo'),
+//     text = $$('.sec-6-text'),
+//     sec2 = $$('.sec-2-block'),
+//     btn = $$('.pop-up-sec-5-button'),
+//     uls = $$('.pop-up-sec-5-format'),
+//     sec2blocks = $$('.sec-2-blocks'),
+//     sec2blocksMain = $('#sec-2-blocks-main')
 
-  const lol = $('.sec-2'), sec22 = lol.querySelector('.wrapper')
+//   const lol = $('.sec-2'), sec22 = lol.querySelector('.wrapper')
 
 
 
-  //                      ------CALCULATOR--------
-  //sec-2-blocks-main
-  for (let i = 0; i < sec2blocksMain.children.length; i++) {
-    sec2blocksMain.children[i].addEventListener('click', () => {
-      sec2blocksMain.classList.add('selected-' + i)
-      sec2blocksMain.classList.remove('sec-2-blocks-active')
-      sec2blocks[1].classList.add('sec-2-blocks-active')
-    })
+  
 
-    sec2blocks[1].children[i].addEventListener('click', () => {
-      if (sec2blocksMain.classList.contains('selected-0')) {
-        sec2blocksMain.classList.remove('selected-0')
-        sec2blocksMain.classList.add('selected-0-' + i)
-        sec2blocks[1].classList.remove('sec-2-blocks-active')
-        sec2blocks[2].classList.add('sec-2-blocks-active')
-      } else if (sec2blocksMain.classList.contains('selected-1')) {
-        sec2blocksMain.classList.remove('selected-1')
-        sec2blocksMain.classList.add('selected-1-' + i)
-        sec2blocks[1].classList.remove('sec-2-blocks-active')
-        sec2blocks[4].classList.add('sec-2-blocks-active')
-      } else {
-        sec2blocksMain.classList.remove('selected-2')
-        sec2blocksMain.classList.add('selected-2-' + i)
-        sec2blocks[1].classList.remove('sec-2-blocks-active')
-        sec2blocks[3].classList.add('sec-2-blocks-active')
-      }
-    })
-
-    sec2blocks[2].children[i].addEventListener('click', () => {
-      for (let ii = 0; ii < 3; ii++) {
-        if (sec2blocksMain.classList.contains('selected-0-' + ii)) {
-          sec2blocksMain.classList.remove('selected-0-' + ii)
-          //open pop-up class="pop-up-10"
-
-          sec22.style.display           = 'none'
-          $('.pop-up-10').style.display = 'block'
-          // sec2blocks[2].classList.remove('sec-2-blocks-active')
-          // sec2blocksMain.classList.add('sec-2-blocks-active')
-        }
-      }
-    })
-
-    sec2blocks[4].children[i].addEventListener('click', () => {
-      for (let ii = 0; ii < 3; ii++) {
-        if (sec2blocksMain.classList.contains('selected-1-' + ii)) {
-          sec2blocksMain.classList.remove('selected-1-' + ii)
-          //open pop-up class="pop-up-11"
-
-          sec22.style.display           = 'none'
-          $('.pop-up-11').style.display = 'block'
-          // sec2blocks[4].classList.remove('sec-2-blocks-active')
-          // sec2blocksMain.classList.add('sec-2-blocks-active')
-        }
-      }
-    })
-
-    sec2blocks[3].children[i].addEventListener('click', () => {
-      if (sec2blocksMain.classList.contains('selected-2-0')) {
-        sec2blocksMain.classList.remove('selected-2-0')
-        sec2blocksMain.classList.add('selected-2-0-' + i)
-        const pop13 = document.querySelector('.pop-up-13'),
-              h2 = pop13.querySelector('h2')
-        if (sec2blocksMain.classList.contains('selected-2-0-0')) {
-          h2.innerText = 'Стоимость решения — от 600 €/месяц'
-        } else if (sec2blocksMain.classList.contains('selected-2-0-1')) {
-          h2.innerText = 'Стоимость решения — от 825 €/месяц'
-        } else {
-          h2.innerText = 'Стоимость решения — от 1050 €/месяц'
-        }
-        //open pop-up class="pop-up-13"
-
-        sec22.style.display           = 'none'
-        $('.pop-up-13').style.display = 'block'
-        // sec2blocks[3].classList.remove('sec-2-blocks-active')
-        // sec2blocksMain.classList.add('sec-2-blocks-active')
-      } else if (sec2blocksMain.classList.contains('selected-2-1')) {
-        sec2blocksMain.classList.remove('selected-2-1')
-        sec2blocksMain.classList.add('selected-2-1-' + i)
-        const pop14 = document.querySelector('.pop-up-14'),
-              h2 = pop14.querySelector('h2')
-        if (sec2blocksMain.classList.contains('selected-2-1-0')) {
-          h2.innerText = 'Стоимость решения — от 800 €/месяц'
-        } else if (sec2blocksMain.classList.contains('selected-2-1-1')) {
-          h2.innerText = 'Стоимость решения — от 1100 €/месяц'
-        } else {
-          h2.innerText = 'Стоимость решения — от 1400 €/месяц'
-        }
-        //open pop-up class="pop-up-14"
-
-        sec22.style.display           = 'none'
-        $('.pop-up-14').style.display = 'block'
-        // sec2blocks[3].classList.remove('sec-2-blocks-active')
-        // sec2blocksMain.classList.add('sec-2-blocks-active')
-      } else if (sec2blocksMain.classList.contains('selected-2-2')) {
-        sec2blocksMain.classList.remove('selected-2-2')
-        sec2blocksMain.classList.add('selected-2-2-' + i)
-        const pop12 = document.querySelector('.pop-up-12'),
-              h2 = pop12.querySelector('h2')
-        if (sec2blocksMain.classList.contains('selected-2-2-0')) {
-          h2.innerText = 'Стоимость решения — от 400 €/месяц'
-        } else if (sec2blocksMain.classList.contains('selected-2-2-1')) {
-          h2.innerText = 'Стоимость решения — от 550 €/месяц'
-        } else {
-          h2.innerText = 'Стоимость решения — от 700 €/месяц'
-        }
-        //open pop-up class="pop-up-12"
-
-        sec22.style.display           = 'none'
-        $('.pop-up-12').style.display = 'block'
-        // sec2blocks[3].classList.remove('sec-2-blocks-active')
-        // sec2blocksMain.classList.add('sec-2-blocks-active')
-      }
-    })
-
-  }
-//                      ------CALCULATOR END--------
+//   //                      ------CALCULATOR--------
+//   //sec-2-blocks-main
 
 
 
 
 
+//   for (let i = 0; i < sec2blocksMain.children.length; i++) {
+//     sec2blocksMain.children[i].addEventListener('click', () => {
+//       sec2blocksMain.classList.add('selected-' + i)
+//       sec2blocksMain.classList.remove('sec-2-blocks-active')
+//       sec2blocks[1].classList.add('sec-2-blocks-active')
+//     })
 
-  for (let i = 0; i < img.length; i++) {
-    text[i].addEventListener('mouseover', () => {
-      img[i].children[0].style.transform = 'scale(1.2)'
-    })
-    text[i].addEventListener('mouseout', () => {
-      img[i].children[0].style.transform = 'scale(1)'
-    })
-  }
+//     sec2blocks[1].children[i].addEventListener('click', () => {
+//       if (sec2blocksMain.classList.contains('selected-0')) {
+//         sec2blocksMain.classList.remove('selected-0')
+//         sec2blocksMain.classList.add('selected-0-' + i)
+//         sec2blocks[1].classList.remove('sec-2-blocks-active')
+//         sec2blocks[2].classList.add('sec-2-blocks-active')
+//       } else if (sec2blocksMain.classList.contains('selected-1')) {
+//         sec2blocksMain.classList.remove('selected-1')
+//         sec2blocksMain.classList.add('selected-1-' + i)
+//         sec2blocks[1].classList.remove('sec-2-blocks-active')
+//         sec2blocks[4].classList.add('sec-2-blocks-active')
+//       } else {
+//         sec2blocksMain.classList.remove('selected-2')
+//         sec2blocksMain.classList.add('selected-2-' + i)
+//         sec2blocks[1].classList.remove('sec-2-blocks-active')
+//         sec2blocks[3].classList.add('sec-2-blocks-active')
+//       }
+//     })
 
-  for (let i = 0; i < sec2.length; i++) {
-    sec2[i].addEventListener('mouseover', () => {
-      sec2[i].classList.add('sec-2-block-border')
-    })
-    sec2[i].addEventListener('mouseout', () => {
-      sec2[i].classList.remove('sec-2-block-border')
-    })
-  }
+//     sec2blocks[2].children[i].addEventListener('click', () => {
+//       for (let ii = 0; ii < 3; ii++) {
+//         if (sec2blocksMain.classList.contains('selected-0-' + ii)) {
+//           sec2blocksMain.classList.remove('selected-0-' + ii)
+//           //open pop-up class="pop-up-10"
 
-  for (let i = 0; i < btn.length; i++) {
-    btn[i].addEventListener('click', () => {
-      for (let i = 0; i < btn.length; i++) {
-        if (btn[i].classList.contains('pop-up-sec-5-button-active')) {
-          btn[i].classList.remove('pop-up-sec-5-button-active')
-        }
-        if (uls[i].classList.contains('pop-up-sec-5-format-active')) {
-          uls[i].classList.remove('pop-up-sec-5-format-active')
-        }
-      }
-      btn[i].classList.add('pop-up-sec-5-button-active')
-      uls[i].classList.add('pop-up-sec-5-format-active')
-    })
-  }
+//           sec22.style.display           = 'none'
+//           $('.pop-up-10').style.display = 'block'
+//           // sec2blocks[2].classList.remove('sec-2-blocks-active')
+//           // sec2blocksMain.classList.add('sec-2-blocks-active')
+//         }
+//       }
+//     })
 
-})()
+//     sec2blocks[4].children[i].addEventListener('click', () => {
+//       for (let ii = 0; ii < 3; ii++) {
+//         if (sec2blocksMain.classList.contains('selected-1-' + ii)) {
+//           sec2blocksMain.classList.remove('selected-1-' + ii)
+//           //open pop-up class="pop-up-11"
+
+//           sec22.style.display           = 'none'
+//           $('.pop-up-11').style.display = 'block'
+//           // sec2blocks[4].classList.remove('sec-2-blocks-active')
+//           // sec2blocksMain.classList.add('sec-2-blocks-active')
+//         }
+//       }
+//     })
+
+//     sec2blocks[3].children[i].addEventListener('click', () => {
+//       if (sec2blocksMain.classList.contains('selected-2-0')) {
+//         sec2blocksMain.classList.remove('selected-2-0')
+//         sec2blocksMain.classList.add('selected-2-0-' + i)
+//         const pop13 = document.querySelector('.pop-up-13'),
+//               h2 = pop13.querySelector('h2')
+//         if (sec2blocksMain.classList.contains('selected-2-0-0')) {
+//           h2.innerText = 'Стоимость решения — от 600 €/месяц'
+//         } else if (sec2blocksMain.classList.contains('selected-2-0-1')) {
+//           h2.innerText = 'Стоимость решения — от 825 €/месяц'
+//         } else {
+//           h2.innerText = 'Стоимость решения — от 1050 €/месяц'
+//         }
+//         //open pop-up class="pop-up-13"
+
+//         sec22.style.display           = 'none'
+//         $('.pop-up-13').style.display = 'block'
+//         // sec2blocks[3].classList.remove('sec-2-blocks-active')
+//         // sec2blocksMain.classList.add('sec-2-blocks-active')
+//       } else if (sec2blocksMain.classList.contains('selected-2-1')) {
+//         sec2blocksMain.classList.remove('selected-2-1')
+//         sec2blocksMain.classList.add('selected-2-1-' + i)
+//         const pop14 = document.querySelector('.pop-up-14'),
+//               h2 = pop14.querySelector('h2')
+//         if (sec2blocksMain.classList.contains('selected-2-1-0')) {
+//           h2.innerText = 'Стоимость решения — от 800 €/месяц'
+//         } else if (sec2blocksMain.classList.contains('selected-2-1-1')) {
+//           h2.innerText = 'Стоимость решения — от 1100 €/месяц'
+//         } else {
+//           h2.innerText = 'Стоимость решения — от 1400 €/месяц'
+//         }
+//         //open pop-up class="pop-up-14"
+
+//         sec22.style.display           = 'none'
+//         $('.pop-up-14').style.display = 'block'
+//         // sec2blocks[3].classList.remove('sec-2-blocks-active')
+//         // sec2blocksMain.classList.add('sec-2-blocks-active')
+//       } else if (sec2blocksMain.classList.contains('selected-2-2')) {
+//         sec2blocksMain.classList.remove('selected-2-2')
+//         sec2blocksMain.classList.add('selected-2-2-' + i)
+//         const pop12 = document.querySelector('.pop-up-12'),
+//               h2 = pop12.querySelector('h2')
+//         if (sec2blocksMain.classList.contains('selected-2-2-0')) {
+//           h2.innerText = 'Стоимость решения — от 400 €/месяц'
+//         } else if (sec2blocksMain.classList.contains('selected-2-2-1')) {
+//           h2.innerText = 'Стоимость решения — от 550 €/месяц'
+//         } else {
+//           h2.innerText = 'Стоимость решения — от 700 €/месяц'
+//         }
+//         //open pop-up class="pop-up-12"
+
+//         sec22.style.display           = 'none'
+//         $('.pop-up-12').style.display = 'block'
+//         // sec2blocks[3].classList.remove('sec-2-blocks-active')
+//         // sec2blocksMain.classList.add('sec-2-blocks-active')
+//       }
+//     })
+
+//   }
+// //                      ------CALCULATOR END--------
+
+
+
+
+
+
+//   for (let i = 0; i < img.length; i++) {
+//     text[i].addEventListener('mouseover', () => {
+//       img[i].children[0].style.transform = 'scale(1.2)'
+//     })
+//     text[i].addEventListener('mouseout', () => {
+//       img[i].children[0].style.transform = 'scale(1)'
+//     })
+//   }
+
+//   for (let i = 0; i < sec2.length; i++) {
+//     sec2[i].addEventListener('mouseover', () => {
+//       sec2[i].classList.add('sec-2-block-border')
+//     })
+//     sec2[i].addEventListener('mouseout', () => {
+//       sec2[i].classList.remove('sec-2-block-border')
+//     })
+//   }
+
+//   for (let i = 0; i < btn.length; i++) {
+//     btn[i].addEventListener('click', () => {
+//       for (let i = 0; i < btn.length; i++) {
+//         if (btn[i].classList.contains('pop-up-sec-5-button-active')) {
+//           btn[i].classList.remove('pop-up-sec-5-button-active')
+//         }
+//         if (uls[i].classList.contains('pop-up-sec-5-format-active')) {
+//           uls[i].classList.remove('pop-up-sec-5-format-active')
+//         }
+//       }
+//       btn[i].classList.add('pop-up-sec-5-button-active')
+//       uls[i].classList.add('pop-up-sec-5-format-active')
+//     })
+//   }
+
+// })()
+
+$(document).ready(function(){
+	
+	$('.pop-up-sec-5-button').click(function(){
+		var tab_id = $(this).attr('data-tab');
+
+		$('.pop-up-sec-5-button').removeClass('current');
+		$('.pop-up-sec-5-format').removeClass('current');
+
+		$(this).addClass('current');
+		$("#"+tab_id).addClass('current');
+	})
+
+})
